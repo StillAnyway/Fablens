@@ -36,6 +36,47 @@
 				<p>Maskless lithography, made explorable.</p>
 			</div>
 		</div>
+
+		<nav class="header-links" aria-label="Project links">
+			<a
+				class="header-link"
+				href="https://github.com/StillAnyway/Fablens"
+				target="_blank"
+				rel="noreferrer"
+				aria-label="FabLens source code on GitHub"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="m8 9-3 3 3 3M16 9l3 3-3 3M13 6l-2 12" />
+				</svg>
+				<span>Source</span>
+			</a>
+
+			<a
+				class="header-link"
+				href="https://stillanyway.com"
+				target="_blank"
+				rel="noreferrer"
+				aria-label="Pranav Chatur's website"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<circle cx="12" cy="12" r="8" />
+					<path d="M4 12h16M12 4a13 13 0 0 1 0 16M12 4a13 13 0 0 0 0 16" />
+				</svg>
+				<span>Website</span>
+			</a>
+
+			<a
+				class="header-link header-icon-link"
+				href="mailto:pranav@stillanyway.com"
+				aria-label="Email Pranav Chatur"
+				title="Email Pranav Chatur"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<rect x="3" y="5" width="18" height="14" rx="2" />
+					<path d="m4 7 8 6 8-6" />
+				</svg>
+			</a>
+		</nav>
 	</header>
 
 	<BigPicture />
