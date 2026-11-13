@@ -20,7 +20,7 @@ export type PhaseMeta = {
 export const PHASE_META: Record<Phase, PhaseMeta> = {
 	uncoated: {
 		label: 'Uncoated',
-		stepLabel: 'Uncoated',
+		stepLabel: 'Coat',
 		short: 'Needs photoresist',
 		description:
 			'The wafer needs a fresh, uniform coat of light-sensitive photoresist before the next pattern can be printed. In a real process this is usually spin coating followed by a soft bake.',
@@ -52,7 +52,7 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 	},
 	developed: {
 		label: 'Developed',
-		stepLabel: 'Developed',
+		stepLabel: 'Develop',
 		short: 'Resist stencil ready',
 		description:
 			'The temporary resist stencil is ready. A real process must now transfer it into a permanent material before the next layer.',

@@ -279,6 +279,14 @@ a {
 	text-underline-offset: 2px;
 }
 
+.history-note-mobile {
+	display: none;
+}
+
+.history-note-desktop {
+	display: block;
+}
+
 .scene-heading-row {
 	display: flex;
 	align-items: flex-start;
@@ -1634,6 +1642,24 @@ dd.focus-blurred {
 	.header-links {
 		margin-left: 0;
 		gap: 14px;
+	}
+
+	.history-note-mobile {
+		display: block;
+		margin-bottom: 16px;
+	}
+
+	.history-note-desktop {
+		display: none;
+	}
+
+	.phase-track {
+		gap: 2px;
+	}
+
+	.phase-name {
+		font-size: 0.52rem;
+		letter-spacing: 0;
 	}
 
 	.big-picture-main {

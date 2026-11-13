@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LithographyScene from '#lib/components/scene/LithographyScene.svelte';
 	import BigPicture from '#lib/components/experiment/BigPicture.svelte';
+	import HistoryNote from '#lib/components/experiment/HistoryNote.svelte';
 	import ExperimentSteps from '#lib/components/experiment/ExperimentSteps.svelte';
 	import LayerStack from '#lib/components/experiment/LayerStack.svelte';
 	import PatternPicker from '#lib/components/experiment/PatternPicker.svelte';
@@ -79,6 +80,10 @@
 		</nav>
 	</header>
 
+	<div class="history-note-mobile">
+		<HistoryNote />
+	</div>
+
 	<BigPicture />
 
 	<main class="workspace">
@@ -108,16 +113,9 @@
 				{/if}
 			</section>
 
-			<aside class="history-note">
-				<span class="eyebrow">Did you know?</span>
-				<h2>Lithography is older than the chip industry.</h2>
-				<p>
-					It predates semiconductors and has been used in printing and art for over two centuries.
-					<a href="https://en.wikipedia.org/wiki/Lithography" target="_blank" rel="noreferrer">
-						Learn more on Wikipedia
-					</a>.
-				</p>
-			</aside>
+			<div class="history-note-desktop">
+				<HistoryNote />
+			</div>
 		</div>
 
 		<aside
