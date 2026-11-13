@@ -34,5 +34,5 @@
 		{/each}
 	</div>
 
-	<p class="inline-note">Simplified layer types, not production layouts.</p>
+	<p class="inline-note">Illustrative examples, not a complete fabrication recipe.</p>
 </section>

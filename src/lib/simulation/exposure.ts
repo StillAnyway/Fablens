@@ -60,7 +60,10 @@ function currentProjection(state: SimulatorState): Uint8Array {
 }
 
 export function getDisplayMask(state: SimulatorState): Uint8Array {
-	if ((state.phase === 'exposed' || state.phase === 'developed') && state.exposureMask) {
+	if (
+		(state.phase === 'exposed' || state.phase === 'developed' || state.phase === 'transferred') &&
+		state.exposureMask
+	) {
 		return state.exposureMask;
 	}
 	return currentProjection(state);
@@ -68,7 +71,7 @@ export function getDisplayMask(state: SimulatorState): Uint8Array {
 
 export function getResistMask(state: SimulatorState): Uint8Array {
 	const resist = new Uint8Array(WAFER_SIZE * WAFER_SIZE);
-	if (state.phase === 'uncoated') return resist;
+	if (state.phase === 'uncoated' || state.phase === 'transferred') return resist;
 
 	resist.fill(1);
 	if (state.phase !== 'developed' || !state.exposureMask) return resist;

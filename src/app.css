@@ -945,6 +945,14 @@ input[type='range'] {
 	color: var(--faint);
 }
 
+.alignment-hint-warning {
+	color: #fcd34d;
+}
+
+.swatch-transferred {
+	background: #5eead4;
+}
+
 .alignment-aligned {
 	border-color: rgba(52, 211, 153, 0.34);
 	background: rgba(52, 211, 153, 0.07);

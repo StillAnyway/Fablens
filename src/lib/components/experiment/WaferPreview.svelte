@@ -16,6 +16,7 @@
 	const alignment = $derived(readAlignment(simulator.state));
 	const focus = $derived(readFocus(simulator.state.stage.z));
 	const uncoated = $derived(simulator.state.phase === 'uncoated');
+	const transferred = $derived(simulator.state.phase === 'transferred');
 	const layerNumber = $derived(simulator.state.layers.length + 1);
 	const previousLayers = $derived(simulator.state.layers);
 	const referenceLayer = $derived(simulator.state.layers.at(-1) ?? null);
@@ -32,7 +33,9 @@
 					: 'Amber marks the live projected exposure pattern. Cyan is the centred reference to align against.'
 				: simulator.state.phase === 'exposed'
 					? 'Amber marks illuminated resist. In positive resist, these regions are now more soluble.'
-					: 'Dark regions show where development removed the exposed resist. Earlier layers remain visible underneath.'
+					: transferred
+						? 'Conceptual transfer complete: this pattern is treated as a permanent layer. Real etch, deposition and resist strip are not simulated.'
+						: 'Dark regions show where development removed the exposed resist. Earlier layers remain visible underneath.'
 	);
 
 	$effect(() => {
@@ -101,9 +104,16 @@
 			{/if}
 			{#if !alignment.recorded}
 				{#if simulator.state.phase === 'aligned'}
-					<p class="alignment-hint">
-						Alignment is locked. Use Adjust alignment in Process to make changes.
-					</p>
+					{#if alignment.status !== 'aligned'}
+						<p class="alignment-hint alignment-hint-warning">
+							Deliberate misalignment: exposing now will record an offset pattern. Use Adjust
+							alignment to correct it.
+						</p>
+					{:else}
+						<p class="alignment-hint">
+							Alignment is locked. Use Adjust alignment in Process to make changes.
+						</p>
+					{/if}
 				{:else}
 					<p class="alignment-hint">
 						Use the X/Y stage controls to line up the new layer with the cyan reference marks.
@@ -121,6 +131,8 @@
 	<ul class="legend" aria-label="Wafer view legend">
 		{#if uncoated}
 			<li><span class="swatch swatch-substrate"></span>Wafer substrate</li>
+		{:else if transferred}
+			<li><span class="swatch swatch-transferred"></span>Transferred material</li>
 		{:else}
 			<li><span class="swatch swatch-resist"></span>Unexposed resist</li>
 			<li><span class="swatch swatch-exposed"></span>Exposed / soluble</li>

@@ -2,7 +2,7 @@
 
 An open-source, educational simulator for maskless semiconductor lithography, inspired by HackerFab IIT Bombay's documented stage-control projects.
 
-FabLens is a teaching tool, not calibrated equipment software. It shows a stylised lithography machine, a virtual XYZ stage, a deterministic binary-pattern experiment, and a conceptual positive-photoresist exposure/development sequence. It never connects to real hardware.
+FabLens is a teaching tool, not calibrated equipment software. It shows a stylised lithography machine, a virtual XYZ stage, a deterministic binary-pattern experiment, a conceptual positive-photoresist workflow, and a simplified pattern-transfer step. It never connects to real hardware.
 
 ## Run it
 
@@ -28,11 +28,11 @@ npm run lint    # Prettier + ESLint
 - Guided camera views and explicit `+`/`−` zoom buttons. Wheel and pinch gestures do not zoom the 3D scene.
 - Three deterministic, layer-inspired patterns: interconnect wires, contact vias and gate lines.
 - Shared authoritative stage state across the 3D scene, 2D wafer view, controls and serial emulator.
-- Guided sequence: `uncoated → prepared → aligned → exposed → developed`, including an explicit photoresist coating action, with validation and reset.
-- Multi-layer stack: after developing a layer, add another layer, align it to the previous one, and keep building a small virtual wafer stack.
+- Guided sequence: `uncoated → prepared → locked → exposed → developed → transferred`, including an explicit photoresist coating action and a clearly labelled conceptual pattern-transfer step.
+- Multi-layer stack: after transferring a layer, add another layer, align it to the previous one, and keep building a small virtual wafer stack.
 - Conceptual positive-resist model: exposure records illuminated cells; development removes them.
 - Top-down canvas wafer view with resist, exposed, removed and reference-layer legend.
-- Alignment exercise comparing the live or recorded projection with the previous layer (or the centred marks for layer 1), with an on/off reference overlay.
+- Alignment exercise comparing the live or recorded projection with the previous layer (or the centred marks for layer 1), with an on/off reference overlay. Deliberately misaligned exposures are allowed and clearly warned about.
 - Qualitative Z/focus blur on the live projection, explicitly labelled as an illustrative display effect.
 - Plain-language “Start here” overview explaining the big picture: a chip is a stack of printed patterns. Scene labels and the machine-part details panel are hidden by default and can be shown with the `?` toggle.
 - Source-informed developer console emulating `P`, `A`, `R`, `J` and `L` over a virtual serial log.
@@ -40,7 +40,7 @@ npm run lint    # Prettier + ESLint
 
 ## Scientific scope
 
-This prototype deliberately does **not** model diffraction, chemical kinetics, dose, minimum feature size or real exposure recipes. The Z control produces a qualitative visual blur only; it is not an optical model and does not change the recorded binary exposure. Stage coordinates in the experiment are virtual units, not millimetres. The protocol emulator uses an illustrative `0–10000` step range; real firmware derives limits during calibration.
+This prototype deliberately does **not** model diffraction, chemical kinetics, dose, minimum feature size, real exposure recipes, etch chemistry, deposition or resist stripping. The pattern-transfer action is conceptual only. The interconnect, via and gate-line presets are illustrative examples, not a complete transistor fabrication recipe. The Z control produces a qualitative visual blur only; it is not an optical model and does not change the recorded binary exposure. Stage coordinates in the experiment are virtual units, not millimetres. The protocol emulator uses an illustrative `0–10000` step range; real firmware derives limits during calibration.
 
 All machine geometry and optical arrangement are illustrative unless explicitly marked documented. No affiliation with HackerFab IIT Bombay is implied, and the simulator has not been validated on their equipment.
 

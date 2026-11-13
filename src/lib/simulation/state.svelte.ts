@@ -17,8 +17,10 @@ import {
 	selectComponent,
 	selectPattern,
 	setStageAxis,
+	transferPattern as transferPatternAction,
 	unlockAlignment
 } from './engine';
+import { readAlignment } from './alignment';
 import {
 	controllerFromStage,
 	controllerToStage,
@@ -110,10 +112,12 @@ class SimulatorStore {
 	}
 
 	align(): void {
-		this.apply(
-			alignWafer(this.state),
-			'Alignment confirmed and locked for this exposure. Expose when ready.'
-		);
+		const reading = readAlignment(this.state);
+		const message =
+			reading.status === 'aligned'
+				? 'Alignment locked. The pattern is aligned with the reference.'
+				: `Alignment locked with a ${reading.label.toLowerCase()} overlay. Expose to see the effect, or choose Adjust alignment.`;
+		this.apply(alignWafer(this.state), message);
 	}
 
 	adjustAlignment(): void {
@@ -134,6 +138,13 @@ class SimulatorStore {
 		this.apply(
 			developWafer(this.state),
 			'Development removed the exposed resist, leaving unexposed resist behind.'
+		);
+	}
+
+	transferPattern(): void {
+		this.apply(
+			transferPatternAction(this.state),
+			'Conceptual transfer complete. Real etch, deposition and resist strip are not simulated.'
 		);
 	}
 

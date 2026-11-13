@@ -18,6 +18,7 @@ const COLORS = {
 	resist: 'rgba(109, 91, 208, 0.62)',
 	exposed: '#fbbf24',
 	removed: '#0b1220',
+	transferred: '#5eead4',
 	grid: 'rgba(255, 255, 255, 0.055)',
 	edge: '#64748b',
 	reference: 'rgba(56, 189, 248, 0.72)',
@@ -121,7 +122,7 @@ export function drawWafer(
 		ctx.restore();
 	}
 
-	if (state.phase !== 'uncoated') {
+	if (state.phase !== 'uncoated' && state.phase !== 'transferred') {
 		ctx.fillStyle = COLORS.resist;
 		ctx.fillRect(origin, origin, radius * 2, radius * 2);
 	}
@@ -143,10 +144,10 @@ export function drawWafer(
 	if (state.phase !== 'uncoated') {
 		const mask = getDisplayMask(state);
 		const layerColor =
-			state.phase === 'prepared' || state.phase === 'aligned'
+			state.phase === 'prepared' || state.phase === 'aligned' || state.phase === 'exposed'
 				? COLORS.exposed
-				: state.phase === 'exposed'
-					? COLORS.exposed
+				: state.phase === 'transferred'
+					? COLORS.transferred
 					: COLORS.removed;
 		const layer = maskLayer(mask, layerColor);
 		const blur = readFocus(state.stage.z).blurPx;
@@ -158,7 +159,9 @@ export function drawWafer(
 				? 0.72
 				: state.phase === 'developed'
 					? 0.55
-					: 1;
+					: state.phase === 'transferred'
+						? 0.9
+						: 1;
 		ctx.imageSmoothingEnabled = useBlur;
 		ctx.filter = useBlur ? `blur(${blur}px)` : 'none';
 		ctx.drawImage(layer, origin, origin, radius * 2, radius * 2);

@@ -33,7 +33,7 @@ export function selectPattern(state: SimulatorState, patternId: PatternId): Acti
 		return { ok: false, error: 'Unknown pattern.' };
 	}
 
-	if (state.phase === 'exposed' || state.phase === 'developed') {
+	if (state.phase === 'exposed' || state.phase === 'developed' || state.phase === 'transferred') {
 		return {
 			ok: false,
 			error: 'The exposure is already recorded. Reset the experiment to choose a different pattern.'
@@ -140,11 +140,22 @@ export function developWafer(state: SimulatorState): ActionResult {
 	return { ok: true, state: { ...state, phase: 'developed' } };
 }
 
-export function addLayer(state: SimulatorState): ActionResult {
-	if (state.phase !== 'developed' || !state.exposureMask || !state.exposureStage) {
+export function transferPattern(state: SimulatorState): ActionResult {
+	if (state.phase !== 'developed' || !state.exposureMask) {
 		return {
 			ok: false,
-			error: 'Develop the current layer before adding another one.'
+			error: 'Develop the resist stencil before transferring the pattern.'
+		};
+	}
+
+	return { ok: true, state: { ...state, phase: 'transferred' } };
+}
+
+export function addLayer(state: SimulatorState): ActionResult {
+	if (state.phase !== 'transferred' || !state.exposureMask || !state.exposureStage) {
+		return {
+			ok: false,
+			error: 'Transfer the developed pattern before adding another layer.'
 		};
 	}
 

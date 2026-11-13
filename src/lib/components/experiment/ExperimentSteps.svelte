@@ -2,15 +2,25 @@
 	import { simulator } from '#lib/simulation/state.svelte.js';
 	import { PHASE_META, PHASE_ORDER } from '#lib/constants/experiment.js';
 	import type { Phase } from '#lib/types/simulation.js';
+	import { readAlignment } from '#lib/simulation/alignment.js';
 
 	const phaseIndex = $derived(PHASE_ORDER.indexOf(simulator.state.phase));
 	const meta = $derived(PHASE_META[simulator.state.phase]);
+	const alignment = $derived(readAlignment(simulator.state));
+	const actionLabel = $derived(
+		simulator.state.phase === 'prepared' && alignment.status !== 'aligned'
+			? 'Continue with misalignment'
+			: simulator.state.phase === 'aligned' && alignment.status !== 'aligned'
+				? 'Expose misaligned wafer'
+				: meta.action
+	);
 
 	function advance(phase: Phase) {
 		if (phase === 'uncoated') simulator.coat();
 		else if (phase === 'prepared') simulator.align();
 		else if (phase === 'aligned') simulator.expose();
 		else if (phase === 'exposed') simulator.develop();
+		else if (phase === 'developed') simulator.transferPattern();
 		else simulator.addLayer();
 	}
 </script>
@@ -40,9 +50,15 @@
 
 	<p class="phase-description">{meta.description}</p>
 
+	{#if simulator.state.phase === 'aligned' && alignment.status !== 'aligned'}
+		<p class="inline-note warning">
+			Deliberate misalignment: exposing now will record an offset pattern. {alignment.message}
+		</p>
+	{/if}
+
 	<div class="action-row">
 		<button type="button" class="primary-button" onclick={() => advance(simulator.state.phase)}>
-			{meta.action}
+			{actionLabel}
 		</button>
 		{#if simulator.state.phase === 'aligned'}
 			<button type="button" class="ghost-button" onclick={() => simulator.adjustAlignment()}>
@@ -50,7 +66,9 @@
 			</button>
 		{:else}
 			<button type="button" class="ghost-button" onclick={() => simulator.reset()}>
-				{simulator.state.phase === 'developed' ? 'Start over' : 'Reset'}
+				{simulator.state.phase === 'developed' || simulator.state.phase === 'transferred'
+					? 'Start over'
+					: 'Reset'}
 			</button>
 		{/if}
 	</div>

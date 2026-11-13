@@ -1,6 +1,13 @@
 import type { Phase } from '../types/simulation';
 
-export const PHASE_ORDER: Phase[] = ['uncoated', 'prepared', 'aligned', 'exposed', 'developed'];
+export const PHASE_ORDER: Phase[] = [
+	'uncoated',
+	'prepared',
+	'aligned',
+	'exposed',
+	'developed',
+	'transferred'
+];
 
 export type PhaseMeta = {
 	label: string;
@@ -28,11 +35,11 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 		action: 'Confirm alignment'
 	},
 	aligned: {
-		label: 'Aligned',
-		stepLabel: 'Aligned',
-		short: 'Ready to expose',
+		label: 'Locked',
+		stepLabel: 'Locked',
+		short: 'Exposure ready',
 		description:
-			'Alignment is confirmed for this step. You can still reposition the stage or change the pattern before exposing.',
+			'Stage and pattern are locked for this exposure. A misaligned exposure is allowed as a learning experiment.',
 		action: 'Expose wafer'
 	},
 	exposed: {
@@ -46,9 +53,17 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 	developed: {
 		label: 'Developed',
 		stepLabel: 'Developed',
-		short: 'Pattern in resist',
+		short: 'Resist stencil ready',
 		description:
-			'This layer is complete. Its pattern is now part of the wafer stack. Add another layer to build wires, contacts and devices on top, or start over with a fresh wafer.',
+			'The temporary resist stencil is ready. A real process must now transfer it into a permanent material before the next layer.',
+		action: 'Transfer pattern (conceptual)'
+	},
+	transferred: {
+		label: 'Transferred',
+		stepLabel: 'Transfer',
+		short: 'Conceptual material step',
+		description:
+			'Conceptual transfer only: etch, deposition and resist strip are not simulated. You can now add another layer or start over.',
 		action: 'Add another layer'
 	}
 };

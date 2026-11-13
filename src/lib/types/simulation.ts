@@ -1,4 +1,4 @@
-export type Phase = 'uncoated' | 'prepared' | 'aligned' | 'exposed' | 'developed';
+export type Phase = 'uncoated' | 'prepared' | 'aligned' | 'exposed' | 'developed' | 'transferred';
 
 export type PatternId = 'interconnect' | 'vias' | 'gate';
 

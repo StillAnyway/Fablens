@@ -7,7 +7,8 @@ import {
 	createInitialState,
 	developWafer,
 	exposeWafer,
-	moveStage
+	moveStage,
+	transferPattern
 } from './engine';
 import { readAlignment } from './alignment';
 
@@ -31,7 +32,9 @@ function completedLayer(
 	if (!exposed.ok) throw new Error(exposed.error);
 	const developed = developWafer(exposed.state);
 	if (!developed.ok) throw new Error(developed.error);
-	const next = addLayer(developed.state);
+	const transferred = transferPattern(developed.state);
+	if (!transferred.ok) throw new Error(transferred.error);
+	const next = addLayer(transferred.state);
 	if (!next.ok) throw new Error(next.error);
 	return next.state;
 }

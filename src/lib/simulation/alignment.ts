@@ -16,7 +16,8 @@ export type AlignmentReading = {
 
 export function readAlignment(state: SimulatorState): AlignmentReading {
 	const recorded =
-		(state.phase === 'exposed' || state.phase === 'developed') && state.exposureStage !== null;
+		(state.phase === 'exposed' || state.phase === 'developed' || state.phase === 'transferred') &&
+		state.exposureStage !== null;
 	const stage = recorded && state.exposureStage ? state.exposureStage : state.stage;
 	const offset = patternOffsetFromStage(stage);
 	const previous = state.layers.at(-1);

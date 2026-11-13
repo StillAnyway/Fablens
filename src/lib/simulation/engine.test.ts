@@ -10,6 +10,7 @@ import {
 	moveStage,
 	resetSimulation,
 	selectPattern,
+	transferPattern,
 	unlockAlignment
 } from './engine';
 import { getResistMask, patternOffsetFromStage, placePattern, WAFER_SIZE } from './exposure';
@@ -89,6 +90,18 @@ describe('simulation engine', () => {
 		expect(unlocked.patternId).toBe(aligned.patternId);
 	});
 
+	it('allows a deliberately misaligned exposure as an experiment', () => {
+		const moved = unwrap(moveStage(coated(), { x: 20, y: 0, z: 0 }));
+		const aligned = unwrap(alignWafer(moved));
+		expect(aligned.phase).toBe('aligned');
+		const exposed = unwrap(exposeWafer(aligned));
+		expect(exposed.phase).toBe('exposed');
+		expect(exposed.exposureStage).toEqual({ x: 20, y: 0, z: 0 });
+		expect(exposed.exposureMask).toEqual(
+			placePattern(generatePattern('interconnect'), { x: 4, y: 0 }, WAFER_SIZE)
+		);
+	});
+
 	it('runs the guided positive-resist sequence in order', () => {
 		const prepared = coated();
 		expect(prepared.phase).toBe('prepared');
@@ -104,6 +117,9 @@ describe('simulation engine', () => {
 		const developed = unwrap(developWafer(exposed));
 		expect(developed.phase).toBe('developed');
 		expect(developed.exposureMask).not.toBeNull();
+
+		const transferred = unwrap(transferPattern(developed));
+		expect(transferred.phase).toBe('transferred');
 	});
 
 	it('records the illuminated pattern at the aligned stage position', () => {
@@ -145,7 +161,8 @@ describe('simulation engine', () => {
 
 	it('adds a developed layer to the stack and starts the next suggested layer', () => {
 		const developed = developedAt({ x: 0, y: 0, z: 0 });
-		const result = unwrap(addLayer(developed));
+		const transferred = unwrap(transferPattern(developed));
+		const result = unwrap(addLayer(transferred));
 
 		expect(result.phase).toBe('uncoated');
 		expect(result.patternId).toBe('vias');
@@ -157,8 +174,13 @@ describe('simulation engine', () => {
 		expect(result.layers[0].exposureMask).toEqual(developed.exposureMask);
 	});
 
-	it('rejects adding a layer before development', () => {
-		const result = addLayer(coated());
+	it('rejects transfer before development', () => {
+		const result = transferPattern(coated());
+		expect(result.ok).toBe(false);
+	});
+
+	it('rejects adding a layer before transfer', () => {
+		const result = addLayer(developedAt({ x: 0, y: 0, z: 0 }));
 		expect(result.ok).toBe(false);
 	});
 
@@ -175,7 +197,8 @@ describe('simulation engine', () => {
 
 	it('resets to a fresh bare-wafer state and clears the stack', () => {
 		const exposed = unwrap(exposeWafer(unwrap(alignWafer(coated('vias')))));
-		const stacked = unwrap(addLayer(unwrap(developWafer(exposed))));
+		const transferred = unwrap(transferPattern(unwrap(developWafer(exposed))));
+		const stacked = unwrap(addLayer(transferred));
 		expect(stacked.layers).toHaveLength(1);
 
 		const reset = resetSimulation();
