@@ -33,7 +33,7 @@
 			</span>
 			<div>
 				<div class="brand-name">FabLens</div>
-				<p>Maskless lithography, made explorable.</p>
+				<p>The art of the print, now prints intelligence too!</p>
 			</div>
 		</div>
 
