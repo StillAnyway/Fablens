@@ -239,8 +239,44 @@ a {
 	border-radius: var(--radius-lg);
 }
 
+.scene-column {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	min-width: 0;
+}
+
 .scene-card {
 	overflow: hidden;
+}
+
+.history-note {
+	padding: 15px 18px;
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--cyan);
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
+	background: linear-gradient(90deg, rgba(56, 189, 248, 0.06), transparent 60%), var(--panel);
+}
+
+.history-note .eyebrow {
+	color: var(--cyan);
+}
+
+.history-note h2 {
+	margin: 4px 0 5px;
+	font-size: 0.95rem;
+}
+
+.history-note p {
+	color: var(--muted);
+	font-size: 0.77rem;
+	line-height: 1.55;
+}
+
+.history-note a {
+	color: var(--cyan);
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 .scene-heading-row {
@@ -1549,13 +1585,6 @@ dd.focus-blurred {
 .swatch-layer {
 	background: rgba(20, 184, 166, 0.55);
 	border: 1px solid rgba(20, 184, 166, 0.85);
-}
-
-@media (min-width: 1181px) {
-	.scene-card {
-		position: sticky;
-		top: 18px;
-	}
 }
 
 @media (max-width: 1180px) {

@@ -82,30 +82,43 @@
 	<BigPicture />
 
 	<main class="workspace">
-		<section class="scene-card" aria-labelledby="scene-heading">
-			<div class="scene-heading-row">
-				<div>
-					<h1 id="scene-heading">The lithography machine</h1>
-					<p>Stylised teaching model. Geometry and optical layout are illustrative.</p>
+		<div class="scene-column">
+			<section class="scene-card" aria-labelledby="scene-heading">
+				<div class="scene-heading-row">
+					<div>
+						<h1 id="scene-heading">The lithography machine</h1>
+						<p>Stylised teaching model. Geometry and optical layout are illustrative.</p>
+					</div>
+					<span class="phase-pill phase-{simulator.state.phase}">{phase.label}</span>
 				</div>
-				<span class="phase-pill phase-{simulator.state.phase}">{phase.label}</span>
-			</div>
 
-			<div class="scene-stage">
-				<LithographyScene />
-				<p class="sr-only">
-					Interactive 3D lithography machine. Drag to orbit, use the zoom buttons or camera view
-					presets, or select parts from the component list below.
+				<div class="scene-stage">
+					<LithographyScene />
+					<p class="sr-only">
+						Interactive 3D lithography machine. Drag to orbit, use the zoom buttons or camera view
+						presets, or select parts from the component list below.
+					</p>
+					<div class="scene-hint">
+						Drag to orbit · Right-drag to pan · +/− to zoom · ? shows parts and details
+					</div>
+				</div>
+
+				{#if viewState.showSceneLabels}
+					<ComponentInfo />
+				{/if}
+			</section>
+
+			<aside class="history-note">
+				<span class="eyebrow">Did you know?</span>
+				<h2>Lithography is older than the chip industry.</h2>
+				<p>
+					It predates semiconductors and has been used in printing and art for over two centuries.
+					<a href="https://en.wikipedia.org/wiki/Lithography" target="_blank" rel="noreferrer">
+						Learn more on Wikipedia
+					</a>.
 				</p>
-				<div class="scene-hint">
-					Drag to orbit · Right-drag to pan · +/− to zoom · ? shows parts and details
-				</div>
-			</div>
-
-			{#if viewState.showSceneLabels}
-				<ComponentInfo />
-			{/if}
-		</section>
+			</aside>
+		</div>
 
 		<aside
 			class="control-column"
