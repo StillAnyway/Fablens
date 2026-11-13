@@ -8,11 +8,8 @@ export type WaferDrawOptions = {
 	showReference?: boolean;
 	showReferenceFrame?: boolean;
 	showGrid?: boolean;
-	/** Masks of layers already developed on the wafer. */
 	previousMasks?: Uint8Array[];
-	/** Mask used as the alignment reference; defaults to a centred live template. */
 	referenceMask?: Uint8Array | null;
-	/** Placement offset of the reference mask, in wafer cells. */
 	referenceOffset?: PatternOffset;
 };
 

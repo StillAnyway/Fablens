@@ -1,9 +1,5 @@
-/** Virtual Z units within which the teaching model treats the image as focused. */
 export const FOCUS_TOLERANCE = 5;
-
-/** Virtual Z units beyond which the illustration reaches maximum blur. */
 export const FOCUS_BLUR_RANGE = 45;
-
 export const MAX_DISPLAY_BLUR_PX = 6;
 
 export type FocusStatus = 'focused' | 'soft' | 'blurred';
@@ -15,10 +11,7 @@ export type FocusReading = {
 	distance: number;
 };
 
-/**
- * Qualitative focus model for teaching only. It does not represent a real
- * depth of field, numerical aperture or optical simulation.
- */
+// Qualitative display model, not an optical simulation.
 export function readFocus(z: number): FocusReading {
 	const distance = Math.abs(z);
 	const blurPx = Math.min(

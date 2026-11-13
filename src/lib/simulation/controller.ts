@@ -1,10 +1,7 @@
 import type { StagePosition } from '../types/simulation';
 import { STAGE_LIMIT, clamp } from './exposure';
 
-/**
- * Emulated protocol limits. Upstream firmware derives its real limits during
- * calibration; these fixed values are only a teaching fixture.
- */
+// Emulated limits; real firmware derives limits from calibration.
 export const PROTOCOL_MIN = 0;
 export const PROTOCOL_MAX = 10000;
 export const PROTOCOL_CENTER = 5000;
@@ -99,11 +96,7 @@ function parseAxis(value: string | undefined): ControllerAxis | null {
 	return AXES.includes(axis as ControllerAxis) ? (axis as ControllerAxis) : null;
 }
 
-/**
- * Executes one newline-free command against the emulated controller.
- * Only P, A, R, J and L are supported; this is a source-informed teaching
- * subset, not a complete firmware reimplementation.
- */
+// Source-informed subset: P, A, R, J, L.
 export function executeCommand(state: ControllerState, rawLine: string): ControllerResult {
 	const line = rawLine.trim();
 	if (line.length === 0) {

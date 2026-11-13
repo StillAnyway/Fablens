@@ -40,13 +40,11 @@ export function selectPattern(state: SimulatorState, patternId: PatternId): Acti
 		};
 	}
 
-	// Changing the pattern after confirmation invalidates the confirmed alignment.
 	const phase = state.phase === 'aligned' ? 'prepared' : state.phase;
 	return { ok: true, state: { ...state, phase, patternId } };
 }
 
 export function moveStage(state: SimulatorState, stage: StagePosition): ActionResult {
-	// Moving after confirmation invalidates the confirmed alignment.
 	const phase = state.phase === 'aligned' ? 'prepared' : state.phase;
 	return { ok: true, state: { ...state, phase, stage: clampStage(stage) } };
 }

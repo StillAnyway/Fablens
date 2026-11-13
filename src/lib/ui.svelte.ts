@@ -6,10 +6,6 @@ export const viewState = $state({
 	activeView: 'overview' as SceneView | null
 });
 
-/**
- * Imperative hooks supplied by the mounted scene. Buttons call these directly,
- * so no reactive effect can repeatedly drive the camera.
- */
 export const sceneCommands = {
 	zoom: null as ((direction: -1 | 1) => void) | null,
 	setView: null as ((view: SceneView) => void) | null

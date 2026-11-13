@@ -1,10 +1,7 @@
 import type { SimulatorState, StagePosition } from '../types/simulation';
 import { PATTERN_SIZE, WAFER_SIZE, generatePattern } from './patterns';
 
-/** Virtual stage travel limit per axis. Not a physical distance. */
 export const STAGE_LIMIT = 50;
-
-/** Virtual stage units per wafer cell used by the teaching overlay. */
 export const VIRTUAL_UNITS_PER_CELL = 5;
 
 export type PatternOffset = {
@@ -24,10 +21,6 @@ export function clampStage(stage: StagePosition): StagePosition {
 	};
 }
 
-/**
- * Converts virtual stage coordinates into a pattern offset in wafer cells.
- * Positive X moves the overlay right; positive Y moves it up in the top-down view.
- */
 export function patternOffsetFromStage(stage: StagePosition): PatternOffset {
 	return {
 		x: Math.round(stage.x / VIRTUAL_UNITS_PER_CELL),
@@ -35,10 +28,6 @@ export function patternOffsetFromStage(stage: StagePosition): PatternOffset {
 	};
 }
 
-/**
- * Places a square pattern mask onto the wafer grid.
- * Cells that fall outside the wafer are clipped.
- */
 export function placePattern(
 	pattern: Uint8Array,
 	offset: PatternOffset,
@@ -52,7 +41,7 @@ export function placePattern(
 		for (let px = 0; px < patternSize; px += 1) {
 			if (!pattern[py * patternSize + px]) continue;
 			const x = base + px + offset.x;
-			// Canvas rows increase downward, so positive Y offset subtracts.
+			// Wafer rows increase downward, so positive Y moves the pattern up.
 			const y = base + py - offset.y;
 			if (x < 0 || y < 0 || x >= waferSize || y >= waferSize) continue;
 			mask[y * waferSize + x] = 1;
@@ -70,10 +59,6 @@ function currentProjection(state: SimulatorState): Uint8Array {
 	);
 }
 
-/**
- * The mask that should be shown for the current phase. Before exposure this is
- * the live projection; after exposure it is the recorded exposure.
- */
 export function getDisplayMask(state: SimulatorState): Uint8Array {
 	if ((state.phase === 'exposed' || state.phase === 'developed') && state.exposureMask) {
 		return state.exposureMask;
@@ -81,10 +66,6 @@ export function getDisplayMask(state: SimulatorState): Uint8Array {
 	return currentProjection(state);
 }
 
-/**
- * Derived positive-resist state: 1 = resist remains, 0 = resist removed.
- * Development removes only cells that were exposed.
- */
 export function getResistMask(state: SimulatorState): Uint8Array {
 	const resist = new Uint8Array(WAFER_SIZE * WAFER_SIZE);
 	if (state.phase === 'uncoated') return resist;

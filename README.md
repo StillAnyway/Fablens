@@ -46,9 +46,9 @@ All machine geometry and optical arrangement are illustrative unless explicitly 
 
 ## Source references
 
-- [HackerFab IIT Bombay `litho-ui`](https://github.com/hackerfabiitb/litho-ui) — stage UI, Arduino firmware and serial protocol. The emulator's behaviours were checked against the README and `xyz1/xyz1.ino` at the time of writing.
+- [HackerFab IIT Bombay `litho-ui`](https://github.com/hackerfabiitb/litho-ui), the stage UI, Arduino firmware and serial protocol. The emulator's behaviours were checked against the README and `xyz1/xyz1.ino` at the time of writing.
 - [HackerFab IIT Bombay GitHub](https://github.com/hackerfabiitb)
-- [Hacker Fab documentation](https://docs.hackerfab.org/home) — general process context, not the exact IITB build.
+- [Hacker Fab documentation](https://docs.hackerfab.org/home), general process context, not the exact IITB build.
 - [Junction](https://junction.lagrangepoint.org/)
 
 Specific honesty notes:
@@ -77,3 +77,7 @@ src/
 ```
 
 The simulation and emulator are plain TypeScript and are tested without rendering a canvas. Svelte components consume a single shared reactive state module.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

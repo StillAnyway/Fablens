@@ -1,9 +1,7 @@
 import type { PatternId } from '../types/simulation';
 
-/** Size of the square pattern grid, in pattern cells. */
 export const PATTERN_SIZE = 40;
 
-/** Size of the square virtual wafer grid, in wafer cells. */
 export const WAFER_SIZE = 64;
 
 export const PATTERN_IDS: PatternId[] = ['interconnect', 'vias', 'gate'];
@@ -26,7 +24,6 @@ export const PATTERN_DESCRIPTIONS: Record<PatternId, string> = {
 	gate: 'Closely spaced lines. These could define transistor gate electrodes.'
 };
 
-/** Suggests a sensible next layer so the stack tells a small process story. */
 export const NEXT_PATTERN: Record<PatternId, PatternId> = {
 	interconnect: 'vias',
 	vias: 'gate',
@@ -48,10 +45,6 @@ function fillRect(mask: Uint8Array, x0: number, y0: number, width: number, heigh
 	}
 }
 
-/**
- * Returns a fresh, deterministic binary mask for a layer-type preset.
- * Cell values are 1 where light would pass and 0 elsewhere.
- */
 export function generatePattern(id: PatternId): Uint8Array {
 	const mask = emptyPattern();
 

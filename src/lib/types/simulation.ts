@@ -24,20 +24,9 @@ export type SimulatorState = {
 	phase: Phase;
 	selectedComponent: ComponentId | null;
 	patternId: PatternId;
-	/** Virtual stage coordinates. Deliberately not millimetres. */
 	stage: StagePosition;
-	/**
-	 * Illuminated wafer cells recorded at exposure time, in row-major order.
-	 * `null` until the wafer has been exposed.
-	 */
 	exposureMask: Uint8Array | null;
-	/**
-	 * A snapshot of the stage at exposure time. This is a historical record of
-	 * the exposure event, not a second live position. Live projection placement
-	 * is always derived from `stage`.
-	 */
 	exposureStage: StagePosition | null;
-	/** Developed layers already committed to the virtual wafer stack. */
 	layers: LayerRecord[];
 };
 

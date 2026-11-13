@@ -4,9 +4,7 @@ import { patternOffsetFromStage, type PatternOffset } from './exposure';
 export type AlignmentStatus = 'aligned' | 'close' | 'misaligned';
 
 export type AlignmentReading = {
-	/** Absolute placement offset of the live or recorded current layer. */
 	offset: PatternOffset;
-	/** Offset of the layer being aligned against. Centred for the first layer. */
 	referenceOffset: PatternOffset;
 	referenceNumber: number | null;
 	maxError: number;
@@ -16,11 +14,6 @@ export type AlignmentReading = {
 	message: string;
 };
 
-/**
- * Compares the current layer position with the previous developed layer.
- * For the first layer the centred reference marks are the target.
- * One cell of error is treated as "close"; two or more is "misaligned".
- */
 export function readAlignment(state: SimulatorState): AlignmentReading {
 	const recorded =
 		(state.phase === 'exposed' || state.phase === 'developed') && state.exposureStage !== null;

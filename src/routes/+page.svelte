@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>FabLens — Interactive maskless lithography simulator</title>
+	<title>FabLens: Interactive maskless lithography simulator</title>
 	<meta
 		name="description"
 		content="An open-source, educational maskless lithography simulator: explore a stylised machine, align a virtual stage, expose positive photoresist and develop a pattern."
@@ -35,10 +35,6 @@
 				<div class="brand-name">FabLens</div>
 				<p>Maskless lithography, made explorable.</p>
 			</div>
-		</div>
-		<div class="header-badges">
-			<span class="badge">Educational approximation</span>
-			<span class="badge badge-quiet">No hardware control</span>
 		</div>
 	</header>
 

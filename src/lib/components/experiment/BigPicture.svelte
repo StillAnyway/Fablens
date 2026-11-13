@@ -4,7 +4,7 @@
 			<span class="eyebrow">Start here</span>
 			<h2 id="big-picture-heading">A chip is a stack of printed patterns.</h2>
 			<p>
-				A silicon wafer — a thin slice used to make chips — is coated with a light-sensitive layer.
+				A silicon wafer (a thin slice used to make chips) is coated with a light-sensitive layer.
 				Lithography prints one pattern into that layer, and development leaves a stencil. Later
 				steps use the stencil to add or remove material only where the circuit needs it. Stack and
 				line up several patterns, and you get wires, connections and transistors (tiny switches).

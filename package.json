@@ -2,6 +2,7 @@
 	"name": "fablens",
 	"version": "0.0.1",
 	"private": true,
+	"license": "MIT",
 	"description": "Educational maskless lithography simulator",
 	"type": "module",
 	"imports": {
