@@ -1,0 +1,146 @@
+<script lang="ts">
+	import { simulator } from '#lib/simulation/state.svelte.js';
+	import { PHASE_META } from '#lib/constants/experiment.js';
+	import { patternOffsetFromStage } from '#lib/simulation/exposure.js';
+	import { PATTERN_LABELS } from '#lib/simulation/patterns.js';
+	import { readAlignment } from '#lib/simulation/alignment.js';
+	import { readFocus } from '#lib/simulation/focus.js';
+	import { viewState } from '#lib/ui.svelte.js';
+	import { drawWafer } from '#lib/utils/waferCanvas.js';
+
+	const SIZE = 560;
+	let canvas: HTMLCanvasElement | undefined = $state();
+
+	const offset = $derived(patternOffsetFromStage(simulator.state.stage));
+	const meta = $derived(PHASE_META[simulator.state.phase]);
+	const alignment = $derived(readAlignment(simulator.state));
+	const focus = $derived(readFocus(simulator.state.stage.z));
+	const uncoated = $derived(simulator.state.phase === 'uncoated');
+	const layerNumber = $derived(simulator.state.layers.length + 1);
+	const previousLayers = $derived(simulator.state.layers);
+	const referenceLayer = $derived(simulator.state.layers.at(-1) ?? null);
+	const hasPreviousLayers = $derived(previousLayers.length > 0);
+
+	const summary = $derived(
+		uncoated
+			? hasPreviousLayers
+				? 'The previous layers remain on the wafer. A new photoresist coat is needed for the next layer.'
+				: 'Bare wafer surface. No photoresist has been applied yet, so there is nothing to expose.'
+			: simulator.state.phase === 'prepared' || simulator.state.phase === 'aligned'
+				? hasPreviousLayers
+					? `Layer ${layerNumber}: amber is the live projection. Cyan is the previous layer to align against.`
+					: 'Amber marks the live projected exposure pattern. Cyan is the centred reference to align against.'
+				: simulator.state.phase === 'exposed'
+					? 'Amber marks illuminated resist. In positive resist, these regions are now more soluble.'
+					: 'Dark regions show where development removed the exposed resist. Earlier layers remain visible underneath.'
+	);
+
+	$effect(() => {
+		if (!canvas) return;
+		const dpr = Math.min(window.devicePixelRatio || 1, 2);
+		const pixelSize = Math.round(SIZE * dpr);
+		if (canvas.width !== pixelSize) {
+			canvas.width = pixelSize;
+			canvas.height = pixelSize;
+		}
+
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		drawWafer(ctx, SIZE, simulator.state, {
+			showReference: viewState.showReferenceLayer,
+			showReferenceFrame: true,
+			showGrid: true,
+			previousMasks: previousLayers.map((layer) => layer.exposureMask),
+			referenceMask: referenceLayer?.exposureMask ?? null,
+			referenceOffset: alignment.referenceOffset
+		});
+	});
+</script>
+
+<section class="panel-section" aria-labelledby="wafer-heading">
+	<div class="section-heading">
+		<h2 id="wafer-heading">Wafer view</h2>
+		<span class="section-note">Layer {layerNumber} · {meta.label}</span>
+	</div>
+
+	<div
+		class="wafer-canvas-wrap"
+		role="img"
+		aria-label={`Top-down wafer view for layer ${layerNumber} during the ${meta.label.toLowerCase()} phase. Projection offset ${offset.x} by ${offset.y} cells. Alignment ${alignment.label.toLowerCase()}. ${summary}`}
+	>
+		<canvas bind:this={canvas} class="wafer-canvas" aria-hidden="true"></canvas>
+	</div>
+
+	<p class="wafer-summary">{summary}</p>
+
+	{#if uncoated}
+		<div class="alignment-card alignment-neutral">
+			<strong>No resist layer yet</strong>
+			<p>
+				{#if hasPreviousLayers}
+					Coat the wafer before aligning the next layer to layer {referenceLayer?.number}.
+				{:else}
+					Coat the wafer before judging overlay alignment or exposing a pattern.
+				{/if}
+			</p>
+		</div>
+	{:else}
+		<div class="alignment-card alignment-{alignment.status}" aria-live="polite">
+			<div class="alignment-heading">
+				<span class="alignment-badge">{alignment.label}</span>
+				<span class="alignment-source">
+					{alignment.recorded ? 'recorded exposure' : 'live projection'}
+				</span>
+			</div>
+			<p>{alignment.message}</p>
+			{#if referenceLayer}
+				<p class="alignment-hint">
+					Reference: layer {referenceLayer.number} · {PATTERN_LABELS[referenceLayer.patternId]}
+				</p>
+			{/if}
+			{#if !alignment.recorded}
+				{#if simulator.state.phase === 'aligned'}
+					<p class="alignment-hint">
+						Alignment is locked. Use Adjust alignment in Process to make changes.
+					</p>
+				{:else}
+					<p class="alignment-hint">
+						Use the X/Y stage controls to line up the new layer with the cyan reference marks.
+					</p>
+				{/if}
+			{/if}
+		</div>
+	{/if}
+
+	<label class="toggle-row">
+		<input type="checkbox" bind:checked={viewState.showReferenceLayer} />
+		<span>Show reference layer</span>
+	</label>
+
+	<ul class="legend" aria-label="Wafer view legend">
+		{#if uncoated}
+			<li><span class="swatch swatch-substrate"></span>Wafer substrate</li>
+		{:else}
+			<li><span class="swatch swatch-resist"></span>Unexposed resist</li>
+			<li><span class="swatch swatch-exposed"></span>Exposed / soluble</li>
+			<li><span class="swatch swatch-removed"></span>Removed by development</li>
+		{/if}
+		{#if hasPreviousLayers}
+			<li><span class="swatch swatch-layer"></span>Previous layers</li>
+		{/if}
+		<li><span class="swatch swatch-reference"></span>Alignment reference</li>
+	</ul>
+
+	<p class="inline-note">
+		Offset: {offset.x >= 0 ? '+' : ''}{offset.x} / {offset.y >= 0 ? '+' : ''}{offset.y} cells. Moving
+		the stage shifts the projected pattern relative to the wafer.
+	</p>
+
+	{#if !uncoated && focus.status !== 'focused' && (simulator.state.phase === 'prepared' || simulator.state.phase === 'aligned')}
+		<p class="inline-note focus-note">
+			Illustrative defocus: the amber projection is blurred because Z is away from the nominal focus
+			height. This display effect is not a calibrated optical model.
+		</p>
+	{/if}
+</section>
