@@ -127,10 +127,10 @@ export function drawWafer(
 		ctx.fillRect(origin, origin, radius * 2, radius * 2);
 	}
 
-	const referenceMask = showReference
-		? (explicitReference ??
-			placePattern(generatePattern(state.patternId), { x: 0, y: 0 }, WAFER_SIZE))
+	const liveReference = state.patternId
+		? placePattern(generatePattern(state.patternId), { x: 0, y: 0 }, WAFER_SIZE)
 		: null;
+	const referenceMask = showReference ? (explicitReference ?? liveReference) : null;
 
 	if (referenceMask) {
 		const mask = maskLayer(referenceMask, COLORS.referenceFill);

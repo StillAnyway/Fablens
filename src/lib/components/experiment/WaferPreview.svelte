@@ -21,21 +21,34 @@
 	const previousLayers = $derived(simulator.state.layers);
 	const referenceLayer = $derived(simulator.state.layers.at(-1) ?? null);
 	const hasPreviousLayers = $derived(previousLayers.length > 0);
+	const hasPattern = $derived(simulator.state.patternId !== null);
+	const referenceName = $derived(
+		alignment.referenceNumber ? `layer ${alignment.referenceNumber}` : 'centre'
+	);
+	const alignmentSummary = $derived(
+		alignment.status === 'aligned'
+			? `Aligned to ${referenceName}`
+			: alignment.status === 'close'
+				? `1 cell off ${referenceName}`
+				: `Offset from ${referenceName}`
+	);
 
 	const summary = $derived(
 		uncoated
 			? hasPreviousLayers
 				? 'The previous layers remain on the wafer. A new photoresist coat is needed for the next layer.'
 				: 'Bare wafer surface. No photoresist has been applied yet, so there is nothing to expose.'
-			: simulator.state.phase === 'prepared' || simulator.state.phase === 'aligned'
-				? hasPreviousLayers
-					? `Layer ${layerNumber}: amber is the live projection. Cyan is the previous layer to align against.`
-					: 'Amber marks the live projected exposure pattern. Cyan is the centred reference to align against.'
-				: simulator.state.phase === 'exposed'
-					? 'Amber marks illuminated resist. In positive resist, these regions are now more soluble.'
-					: transferred
-						? 'Conceptual transfer complete: this pattern is treated as a permanent layer. Real etch, deposition and resist strip are not simulated.'
-						: 'Dark regions show where development removed the exposed resist. Earlier layers remain visible underneath.'
+			: !hasPattern
+				? 'Choose a layer type to see the projected pattern.'
+				: simulator.state.phase === 'prepared' || simulator.state.phase === 'aligned'
+					? hasPreviousLayers
+						? `Layer ${layerNumber}: amber is the live projection. Cyan is the previous layer to align against.`
+						: 'Amber marks the live projected exposure pattern. Cyan is the centred reference to align against.'
+					: simulator.state.phase === 'exposed'
+						? 'Amber marks illuminated resist. In positive resist, these regions are now more soluble.'
+						: transferred
+							? 'Conceptual transfer complete: this pattern is treated as a permanent layer. Real etch, deposition and resist strip are not simulated.'
+							: 'Dark regions show where development removed the exposed resist. Earlier layers remain visible underneath.'
 	);
 
 	$effect(() => {
@@ -78,49 +91,58 @@
 	<p class="wafer-summary">{summary}</p>
 
 	{#if uncoated}
-		<div class="alignment-card alignment-neutral">
+		<div class="alignment-card alignment-neutral alignment-inline">
 			<strong>No resist layer yet</strong>
-			<p>
+			<span>
 				{#if hasPreviousLayers}
-					Coat the wafer before aligning the next layer to layer {referenceLayer?.number}.
+					Coat before aligning to layer {referenceLayer?.number}.
 				{:else}
-					Coat the wafer before judging overlay alignment or exposing a pattern.
+					Coat before aligning.
 				{/if}
-			</p>
+			</span>
+		</div>
+	{:else if !hasPattern}
+		<div class="alignment-card alignment-neutral alignment-inline">
+			<strong>No pattern selected</strong>
+			<span>Choose a layer type to preview the projection.</span>
 		</div>
 	{:else}
-		<div class="alignment-card alignment-{alignment.status}" aria-live="polite">
-			<div class="alignment-heading">
+		<details class="alignment-card alignment-{alignment.status}">
+			<summary class="alignment-summary">
 				<span class="alignment-badge">{alignment.label}</span>
+				<span class="alignment-summary-text">{alignmentSummary}</span>
+			</summary>
+
+			<div class="alignment-details">
 				<span class="alignment-source">
 					{alignment.recorded ? 'recorded exposure' : 'live projection'}
 				</span>
-			</div>
-			<p>{alignment.message}</p>
-			{#if referenceLayer}
-				<p class="alignment-hint">
-					Reference: layer {referenceLayer.number} · {PATTERN_LABELS[referenceLayer.patternId]}
-				</p>
-			{/if}
-			{#if !alignment.recorded}
-				{#if simulator.state.phase === 'aligned'}
-					{#if alignment.status !== 'aligned'}
-						<p class="alignment-hint alignment-hint-warning">
-							Deliberate misalignment: exposing now will record an offset pattern. Use Adjust
-							alignment to correct it.
-						</p>
-					{:else}
-						<p class="alignment-hint">
-							Alignment is locked. Use Adjust alignment in Process to make changes.
-						</p>
-					{/if}
-				{:else}
+				<p>{alignment.message}</p>
+				{#if referenceLayer}
 					<p class="alignment-hint">
-						Use the X/Y stage controls to line up the new layer with the cyan reference marks.
+						Reference: layer {referenceLayer.number} · {PATTERN_LABELS[referenceLayer.patternId]}
 					</p>
 				{/if}
-			{/if}
-		</div>
+				{#if !alignment.recorded}
+					{#if simulator.state.phase === 'aligned'}
+						{#if alignment.status !== 'aligned'}
+							<p class="alignment-hint alignment-hint-warning">
+								Deliberate misalignment: exposing now will record an offset pattern. Click the
+								completed Align step to change it.
+							</p>
+						{:else}
+							<p class="alignment-hint">
+								Alignment is locked. Click the completed Align step to change it.
+							</p>
+						{/if}
+					{:else}
+						<p class="alignment-hint">
+							Use the X/Y stage controls to line up the new layer with the cyan reference marks.
+						</p>
+					{/if}
+				{/if}
+			</div>
+		</details>
 	{/if}
 
 	<label class="toggle-row">
@@ -128,21 +150,24 @@
 		<span>Show reference layer</span>
 	</label>
 
-	<ul class="legend" aria-label="Wafer view legend">
-		{#if uncoated}
-			<li><span class="swatch swatch-substrate"></span>Wafer substrate</li>
-		{:else if transferred}
-			<li><span class="swatch swatch-transferred"></span>Transferred material</li>
-		{:else}
-			<li><span class="swatch swatch-resist"></span>Unexposed resist</li>
-			<li><span class="swatch swatch-exposed"></span>Exposed / soluble</li>
-			<li><span class="swatch swatch-removed"></span>Removed by development</li>
-		{/if}
-		{#if hasPreviousLayers}
-			<li><span class="swatch swatch-layer"></span>Previous layers</li>
-		{/if}
-		<li><span class="swatch swatch-reference"></span>Alignment reference</li>
-	</ul>
+	<details class="wafer-legend">
+		<summary>Legend</summary>
+		<ul class="legend" aria-label="Wafer view legend">
+			{#if uncoated}
+				<li><span class="swatch swatch-substrate"></span>Wafer substrate</li>
+			{:else if transferred}
+				<li><span class="swatch swatch-transferred"></span>Transferred material</li>
+			{:else}
+				<li><span class="swatch swatch-resist"></span>Unexposed resist</li>
+				<li><span class="swatch swatch-exposed"></span>Exposed / soluble</li>
+				<li><span class="swatch swatch-removed"></span>Removed by development</li>
+			{/if}
+			{#if hasPreviousLayers}
+				<li><span class="swatch swatch-layer"></span>Previous layers</li>
+			{/if}
+			<li><span class="swatch swatch-reference"></span>Alignment reference</li>
+		</ul>
+	</details>
 
 	<p class="inline-note">
 		Offset: {offset.x >= 0 ? '+' : ''}{offset.x} / {offset.y >= 0 ? '+' : ''}{offset.y} cells. Moving

@@ -113,6 +113,10 @@
 				{/if}
 			</section>
 
+			<div class="wafer-mobile">
+				<WaferPreview />
+			</div>
+
 			<div class="history-note-desktop">
 				<HistoryNote />
 			</div>
@@ -124,6 +128,9 @@
 			tabindex="-1"
 			aria-label="Experiment controls"
 		>
+			<div class="wafer-desktop">
+				<WaferPreview />
+			</div>
 			<ExperimentSteps />
 			{#if simulator.state.layers.length > 0}
 				<LayerStack />
@@ -132,7 +139,6 @@
 				<PatternPicker />
 				<StageControls />
 			{/if}
-			<WaferPreview />
 			<DeveloperConsole />
 		</aside>
 	</main>

@@ -37,11 +37,17 @@ describe('simulation engine', () => {
 	it('starts with a bare wafer at the centre', () => {
 		const state = createInitialState();
 		expect(state.phase).toBe('uncoated');
-		expect(state.patternId).toBe('interconnect');
+		expect(state.patternId).toBeNull();
 		expect(state.stage).toEqual({ x: 0, y: 0, z: 0 });
 		expect(state.exposureMask).toBeNull();
 		expect(state.exposureStage).toBeNull();
 		expect(state.layers).toEqual([]);
+	});
+
+	it('requires a layer type before alignment', () => {
+		const result = alignWafer(unwrap(coatWafer(createInitialState())));
+		expect(result.ok).toBe(false);
+		if (!result.ok) expect(result.error).toContain('Choose a layer type');
 	});
 
 	it('requires coating before alignment', () => {

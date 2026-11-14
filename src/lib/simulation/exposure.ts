@@ -52,6 +52,7 @@ export function placePattern(
 }
 
 function currentProjection(state: SimulatorState): Uint8Array {
+	if (!state.patternId) return new Uint8Array(WAFER_SIZE * WAFER_SIZE);
 	return placePattern(
 		generatePattern(state.patternId),
 		patternOffsetFromStage(state.stage),

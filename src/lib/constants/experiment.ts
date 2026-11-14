@@ -9,9 +9,10 @@ export const PHASE_ORDER: Phase[] = [
 	'transferred'
 ];
 
+export const PROCESS_STEPS = ['Coat', 'Align', 'Expose', 'Develop', 'Transfer'];
+
 export type PhaseMeta = {
 	label: string;
-	stepLabel: string;
 	short: string;
 	description: string;
 	action: string;
@@ -20,7 +21,6 @@ export type PhaseMeta = {
 export const PHASE_META: Record<Phase, PhaseMeta> = {
 	uncoated: {
 		label: 'Uncoated',
-		stepLabel: 'Coat',
 		short: 'Needs photoresist',
 		description:
 			'The wafer needs a fresh, uniform coat of light-sensitive photoresist before the next pattern can be printed. In a real process this is usually spin coating followed by a soft bake.',
@@ -28,7 +28,6 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 	},
 	prepared: {
 		label: 'Prepared',
-		stepLabel: 'Coated',
 		short: 'Resist-coated wafer',
 		description:
 			'The wafer now carries a thin positive-resist layer. Choose a pattern, then move X/Y to explore alignment against the reference layer.',
@@ -36,7 +35,6 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 	},
 	aligned: {
 		label: 'Locked',
-		stepLabel: 'Locked',
 		short: 'Exposure ready',
 		description:
 			'Stage and pattern are locked for this exposure. A misaligned exposure is allowed as a learning experiment.',
@@ -44,7 +42,6 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 	},
 	exposed: {
 		label: 'Exposed',
-		stepLabel: 'Exposed',
 		short: 'Resist made soluble',
 		description:
 			'The illuminated regions are now recorded on the wafer. For positive resist, those regions have become more soluble.',
@@ -52,7 +49,6 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 	},
 	developed: {
 		label: 'Developed',
-		stepLabel: 'Develop',
 		short: 'Resist stencil ready',
 		description:
 			'The temporary resist stencil is ready. A real process must now transfer it into a permanent material before the next layer.',
@@ -60,7 +56,6 @@ export const PHASE_META: Record<Phase, PhaseMeta> = {
 	},
 	transferred: {
 		label: 'Transferred',
-		stepLabel: 'Transfer',
 		short: 'Conceptual material step',
 		description:
 			'Conceptual transfer only: etch, deposition and resist strip are not simulated. You can now add another layer or start over.',

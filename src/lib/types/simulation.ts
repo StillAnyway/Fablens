@@ -23,7 +23,7 @@ export type LayerRecord = {
 export type SimulatorState = {
 	phase: Phase;
 	selectedComponent: ComponentId | null;
-	patternId: PatternId;
+	patternId: PatternId | null;
 	stage: StagePosition;
 	exposureMask: Uint8Array | null;
 	exposureStage: StagePosition | null;

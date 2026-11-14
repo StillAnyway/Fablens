@@ -3,6 +3,7 @@ export type SceneView = 'overview' | 'stage' | 'optics';
 export const viewState = $state({
 	showReferenceLayer: true,
 	showSceneLabels: false,
+	patternPanelOpen: true,
 	activeView: 'overview' as SceneView | null
 });
 

@@ -31,8 +31,16 @@
 			<span class="layer-swatch current-swatch"></span>
 			<span class="layer-number">{simulator.layerNumber}</span>
 			<span class="layer-copy">
-				<strong>{PATTERN_LABELS[simulator.state.patternId]}</strong>
-				<span>{PATTERN_ROLES[simulator.state.patternId]}</span>
+				<strong>
+					{simulator.state.patternId
+						? PATTERN_LABELS[simulator.state.patternId]
+						: 'No pattern selected'}
+				</strong>
+				<span>
+					{simulator.state.patternId
+						? PATTERN_ROLES[simulator.state.patternId]
+						: 'Choose a layer type'}
+				</span>
 			</span>
 			<span class="layer-status">{meta.label}</span>
 		</li>

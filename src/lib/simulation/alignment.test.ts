@@ -59,7 +59,7 @@ describe('alignment exercise', () => {
 	});
 
 	it('uses the recorded exposure stage after the stage moves', () => {
-		const start = coatWafer(createInitialState());
+		const start = coatWafer(createInitialState('interconnect'));
 		if (!start.ok) throw new Error(start.error);
 		const moved = moveStage(start.state, { x: 15, y: 0, z: 0 });
 		if (!moved.ok) throw new Error(moved.error);

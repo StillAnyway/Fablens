@@ -17,10 +17,10 @@ import {
 	selectComponent,
 	selectPattern,
 	setStageAxis,
-	transferPattern as transferPatternAction,
-	unlockAlignment
+	transferPattern as transferPatternAction
 } from './engine';
 import { readAlignment } from './alignment';
+import { PHASE_ORDER, PROCESS_STEPS } from '../constants/experiment';
 import {
 	controllerFromStage,
 	controllerToStage,
@@ -48,6 +48,11 @@ class SimulatorStore {
 	notice = $state('Start by coating the bare wafer with photoresist.');
 	noticeKind = $state<NoticeKind>('info');
 	controllerLog = $state<LogEntry[]>(initialLog());
+	history = $state<SimulatorState[]>([]);
+
+	constructor() {
+		this.history = [this.state];
+	}
 
 	get protocolPosition(): ControllerPosition {
 		return controllerFromStage(this.state.stage).position;
@@ -57,7 +62,18 @@ class SimulatorStore {
 		return this.state.layers.length + 1;
 	}
 
-	private apply(result: ActionResult, successNotice?: string): boolean {
+	private syncHistory(state: SimulatorState): void {
+		const index = PHASE_ORDER.indexOf(state.phase);
+		const next = [...this.history];
+		next[index] = state;
+		this.history = next;
+	}
+
+	private apply(
+		result: ActionResult,
+		successNotice?: string,
+		mode: 'advance' | 'sync' | 'reset' = 'sync'
+	): boolean {
 		if (!result.ok) {
 			this.notice = result.error;
 			this.noticeKind = 'error';
@@ -65,6 +81,16 @@ class SimulatorStore {
 		}
 
 		this.state = result.state;
+
+		if (mode === 'reset') {
+			this.history = [result.state];
+		} else if (mode === 'advance') {
+			const index = PHASE_ORDER.indexOf(result.state.phase);
+			this.history = [...this.history.slice(0, index), result.state];
+		} else {
+			this.syncHistory(result.state);
+		}
+
 		if (successNotice) {
 			this.notice = successNotice;
 			this.noticeKind = 'success';
@@ -72,8 +98,18 @@ class SimulatorStore {
 		return true;
 	}
 
+	goBackToStep(targetIndex: number): void {
+		const currentIndex = PHASE_ORDER.indexOf(this.state.phase);
+		if (targetIndex < 0 || targetIndex >= currentIndex || !this.history[targetIndex]) return;
+
+		this.state = this.history[targetIndex];
+		this.history = this.history.slice(0, targetIndex + 1);
+		this.notice = `Returned to the ${PROCESS_STEPS[targetIndex]} step. Later steps were undone.`;
+		this.noticeKind = 'info';
+	}
+
 	chooseComponent(component: ComponentId | null): void {
-		this.state = selectComponent(this.state, component);
+		this.apply({ ok: true, state: selectComponent(this.state, component) });
 	}
 
 	choosePattern(patternId: PatternId): void {
@@ -107,7 +143,8 @@ class SimulatorStore {
 	coat(): void {
 		this.apply(
 			coatWafer(this.state),
-			'Photoresist applied. The wafer is now ready for pattern alignment.'
+			'Photoresist applied. The wafer is now ready for pattern alignment.',
+			'advance'
 		);
 	}
 
@@ -116,35 +153,31 @@ class SimulatorStore {
 		const message =
 			reading.status === 'aligned'
 				? 'Alignment locked. The pattern is aligned with the reference.'
-				: `Alignment locked with a ${reading.label.toLowerCase()} overlay. Expose to see the effect, or choose Adjust alignment.`;
-		this.apply(alignWafer(this.state), message);
-	}
-
-	adjustAlignment(): void {
-		this.apply(
-			unlockAlignment(this.state),
-			'Alignment unlocked. Adjust the stage or pattern, then confirm again.'
-		);
+				: `Alignment locked with a ${reading.label.toLowerCase()} overlay. Expose to see the effect, or click the completed Align step to change it.`;
+		this.apply(alignWafer(this.state), message, 'advance');
 	}
 
 	expose(): void {
 		this.apply(
 			exposeWafer(this.state),
-			'Exposure recorded. In positive resist, illuminated areas became more soluble.'
+			'Exposure recorded. In positive resist, illuminated areas became more soluble.',
+			'advance'
 		);
 	}
 
 	develop(): void {
 		this.apply(
 			developWafer(this.state),
-			'Development removed the exposed resist, leaving unexposed resist behind.'
+			'Development removed the exposed resist, leaving unexposed resist behind.',
+			'advance'
 		);
 	}
 
 	transferPattern(): void {
 		this.apply(
 			transferPatternAction(this.state),
-			'Conceptual transfer complete. Real etch, deposition and resist strip are not simulated.'
+			'Conceptual transfer complete. Real etch, deposition and resist strip are not simulated.',
+			'advance'
 		);
 	}
 
@@ -152,12 +185,14 @@ class SimulatorStore {
 		const nextNumber = this.state.layers.length + 1;
 		this.apply(
 			addLayerToStack(this.state),
-			`Layer ${nextNumber} saved on the wafer. Layer ${nextNumber + 1} is ready for coating.`
+			`Layer ${nextNumber} saved on the wafer. Layer ${nextNumber + 1} is ready for coating.`,
+			'reset'
 		);
 	}
 
 	reset(): void {
 		this.state = resetSimulation();
+		this.history = [this.state];
 		this.notice = 'Experiment reset. A fresh bare wafer is mounted.';
 		this.noticeKind = 'info';
 	}
@@ -176,10 +211,16 @@ class SimulatorStore {
 			if (moved.ok) {
 				this.state = moved.state;
 				if (wasAligned && moved.state.phase === 'prepared') {
+					const preparedIndex = PHASE_ORDER.indexOf('prepared');
+					const next = this.history.slice(0, preparedIndex + 1);
+					next[preparedIndex] = moved.state;
+					this.history = next;
 					entries.push({
 						kind: 'note',
 						text: '# Stage motion invalidated the confirmed alignment.'
 					});
+				} else {
+					this.syncHistory(moved.state);
 				}
 			}
 		}

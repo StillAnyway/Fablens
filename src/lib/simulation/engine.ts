@@ -9,7 +9,7 @@ import type {
 import { NEXT_PATTERN, PATTERN_IDS, WAFER_SIZE, generatePattern } from './patterns';
 import { clampStage, patternOffsetFromStage, placePattern } from './exposure';
 
-export function createInitialState(patternId: PatternId = 'interconnect'): SimulatorState {
+export function createInitialState(patternId: PatternId | null = null): SimulatorState {
 	return {
 		phase: 'uncoated',
 		selectedComponent: null,
@@ -73,6 +73,10 @@ export function alignWafer(state: SimulatorState): ActionResult {
 		return { ok: false, error: 'Coat the wafer with photoresist before aligning it.' };
 	}
 
+	if (!state.patternId) {
+		return { ok: false, error: 'Choose a layer type before confirming alignment.' };
+	}
+
 	if (state.phase === 'prepared') {
 		return { ok: true, state: { ...state, phase: 'aligned' } };
 	}
@@ -107,6 +111,10 @@ export function exposeWafer(state: SimulatorState): ActionResult {
 						? 'Confirm alignment before exposing the wafer.'
 						: 'This wafer has already been exposed. Develop it or reset the experiment.'
 		};
+	}
+
+	if (!state.patternId) {
+		return { ok: false, error: 'Choose a layer type before exposing the wafer.' };
 	}
 
 	const exposureMask = placePattern(
@@ -152,7 +160,12 @@ export function transferPattern(state: SimulatorState): ActionResult {
 }
 
 export function addLayer(state: SimulatorState): ActionResult {
-	if (state.phase !== 'transferred' || !state.exposureMask || !state.exposureStage) {
+	if (
+		state.phase !== 'transferred' ||
+		!state.patternId ||
+		!state.exposureMask ||
+		!state.exposureStage
+	) {
 		return {
 			ok: false,
 			error: 'Transfer the developed pattern before adding another layer.'
