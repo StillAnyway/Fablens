@@ -10,9 +10,9 @@
 	const alignment = $derived(readAlignment(simulator.state));
 	const layerComplete = $derived(phaseIndex >= PROCESS_STEPS.length);
 	const hasPattern = $derived(simulator.state.patternId !== null);
-	const actionDisabled = $derived(simulator.state.phase === 'prepared' && !hasPattern);
+	const needsPattern = $derived(simulator.state.phase === 'prepared' && !hasPattern);
 	const actionLabel = $derived(
-		simulator.state.phase === 'prepared' && !hasPattern
+		needsPattern
 			? 'Choose a pattern first'
 			: simulator.state.phase === 'prepared' && alignment.status !== 'aligned'
 				? 'Continue with misalignment'
@@ -20,6 +20,16 @@
 					? 'Expose misaligned wafer'
 					: meta.action
 	);
+
+	function scrollToPattern() {
+		viewState.patternPanelOpen = true;
+		requestAnimationFrame(() => {
+			document.getElementById('pattern-selection')?.scrollIntoView({
+				behavior: 'smooth',
+				block: 'center'
+			});
+		});
+	}
 
 	function reset() {
 		simulator.reset();
@@ -104,8 +114,7 @@
 		<button
 			type="button"
 			class="primary-button"
-			disabled={actionDisabled}
-			onclick={() => advance(simulator.state.phase)}
+			onclick={() => (needsPattern ? scrollToPattern() : advance(simulator.state.phase))}
 		>
 			{actionLabel}
 		</button>

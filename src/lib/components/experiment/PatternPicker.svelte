@@ -28,6 +28,15 @@
 		simulator.choosePattern(pendingPattern);
 		viewState.patternPanelOpen = false;
 		pendingPattern = null;
+
+		if (window.matchMedia('(max-width: 760px)').matches) {
+			window.setTimeout(() => {
+				document.getElementById('wafer-mobile')?.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start'
+				});
+			}, 50);
+		}
 	}
 
 	function cancelPattern() {
@@ -35,7 +44,7 @@
 	}
 </script>
 
-<section class="panel-section" aria-labelledby="pattern-heading">
+<section class="panel-section" id="pattern-selection" aria-labelledby="pattern-heading">
 	<details
 		open={viewState.patternPanelOpen}
 		ontoggle={(event) => (viewState.patternPanelOpen = event.currentTarget.open)}

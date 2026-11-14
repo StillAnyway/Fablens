@@ -113,7 +113,7 @@
 				{/if}
 			</section>
 
-			<div class="wafer-mobile">
+			<div class="wafer-mobile" id="wafer-mobile">
 				<WaferPreview />
 			</div>
 
