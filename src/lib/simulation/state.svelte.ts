@@ -185,7 +185,7 @@ class SimulatorStore {
 		const nextNumber = this.state.layers.length + 1;
 		this.apply(
 			addLayerToStack(this.state),
-			`Layer ${nextNumber} saved on the wafer. Layer ${nextNumber + 1} is ready for coating.`,
+			`Layer ${nextNumber} saved. Layer ${nextNumber + 1} is ready: coat the wafer, then choose a new pattern.`,
 			'reset'
 		);
 	}

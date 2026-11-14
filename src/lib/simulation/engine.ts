@@ -6,7 +6,7 @@ import type {
 	SimulatorState,
 	StagePosition
 } from '../types/simulation';
-import { NEXT_PATTERN, PATTERN_IDS, WAFER_SIZE, generatePattern } from './patterns';
+import { PATTERN_IDS, WAFER_SIZE, generatePattern } from './patterns';
 import { clampStage, patternOffsetFromStage, placePattern } from './exposure';
 
 export function createInitialState(patternId: PatternId | null = null): SimulatorState {
@@ -172,14 +172,12 @@ export function addLayer(state: SimulatorState): ActionResult {
 		};
 	}
 
-	const nextPattern = NEXT_PATTERN[state.patternId];
-
 	return {
 		ok: true,
 		state: {
 			...state,
 			phase: 'uncoated',
-			patternId: nextPattern,
+			patternId: null,
 			stage: { x: 0, y: 0, z: 0 },
 			exposureMask: null,
 			exposureStage: null,

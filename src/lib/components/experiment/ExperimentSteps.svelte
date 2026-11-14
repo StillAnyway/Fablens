@@ -32,7 +32,10 @@
 		else if (phase === 'aligned') simulator.expose();
 		else if (phase === 'exposed') simulator.develop();
 		else if (phase === 'developed') simulator.transferPattern();
-		else simulator.addLayer();
+		else {
+			simulator.addLayer();
+			viewState.patternPanelOpen = true;
+		}
 	}
 </script>
 

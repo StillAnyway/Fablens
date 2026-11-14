@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-	NEXT_PATTERN,
-	PATTERN_IDS,
-	PATTERN_SIZE,
-	countLitCells,
-	generatePattern
-} from './patterns';
+import { PATTERN_IDS, PATTERN_SIZE, countLitCells, generatePattern } from './patterns';
 
 describe('pattern presets', () => {
 	it('generates the same mask on every call', () => {
@@ -29,11 +23,5 @@ describe('pattern presets', () => {
 		expect(masks[0]).not.toEqual(masks[1]);
 		expect(masks[1]).not.toEqual(masks[2]);
 		expect(masks[0]).not.toEqual(masks[2]);
-	});
-
-	it('suggests a coherent next layer cycle', () => {
-		expect(NEXT_PATTERN.interconnect).toBe('vias');
-		expect(NEXT_PATTERN.vias).toBe('gate');
-		expect(NEXT_PATTERN.gate).toBe('interconnect');
 	});
 });

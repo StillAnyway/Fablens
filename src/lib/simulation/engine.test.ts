@@ -171,7 +171,7 @@ describe('simulation engine', () => {
 		const result = unwrap(addLayer(transferred));
 
 		expect(result.phase).toBe('uncoated');
-		expect(result.patternId).toBe('vias');
+		expect(result.patternId).toBeNull();
 		expect(result.stage).toEqual({ x: 0, y: 0, z: 0 });
 		expect(result.exposureMask).toBeNull();
 		expect(result.exposureStage).toBeNull();
